@@ -76,7 +76,7 @@ export type User = {
 
     // Relations
     Document: Document[];
-    loanApplications: ILoanApplication[];
+    LoanApplication: ILoanApplication[];
 }
 
 export type Document = {
