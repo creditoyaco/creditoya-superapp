@@ -79,7 +79,6 @@ function FormNewReq() {
                 )}
 
                 {/* Términos y Condiciones */}
-
                 <div className="grid place-content-center mt-10">
                     <div className="flex items-start gap-2 mb-4">
                         <input
