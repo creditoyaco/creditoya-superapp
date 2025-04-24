@@ -13,7 +13,12 @@ function MissingData() {
         <main className="dark:bg-gray-900 min-h-dvh grid place-content-center px-[5%]">
             <div className="flex flex-wrap gap-6 sm:gap-20 pt-20 pb-10">
                 <div className="grid place-content-center">
-                    <Image src={CheckListIcon} alt="check" className="drop-shadow-md" />
+                    <Image
+                        src={CheckListIcon}
+                        alt="check"
+                        className="drop-shadow-md"
+                        priority={true}
+                    />
                 </div>
                 <div>
                     <div className="mt-4">

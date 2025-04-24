@@ -17,48 +17,58 @@ function PanelComponent() {
     const {
         isLoading,
         allFieldsComplete,
-        userComplete
+        userComplete,
+        dataReady
     } = usePanel();
 
-    if (isLoading && !userComplete) return <LoadingPanel />
+    // Show loading state while data is being fetched or processed
+    if (isLoading || !dataReady) return <LoadingPanel />;
 
-    if (!allFieldsComplete) return <MissingData />;
+    // Only check for missing fields after data is fully loaded and ready
+    if (dataReady && !allFieldsComplete) return <MissingData />;
 
     return (
         <main className="pt-32 min-h-dvh dark:bg-gray-900 px-[5%] flex flex-col">
-            <div className="flex flex-wrap-reverse gap-3 justify-between w-full">
-                <div className="flex flex-row gap-2">
-                    <button
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 shadow-sm cursor-pointer"
-                        aria-label="Crear nueva solicitud"
-                        onClick={toggleNewReq}
-                    >
-                        <FolderPlus size={16} className="flex-shrink-0" />
-                        <span className="text-sm font-medium">
-                            {isOpenNewReq ? "Cancelar" : "Crear nueva solicitud"}
-                        </span>
-                    </button>
+            <div className="flex flex-wrap justify-between">
+                <header className="mb-8">
+                    <h1 className="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100">Gestión de préstamos</h1>
+                    <p className="text-gray-500 text-sm mt-1">Solicita nuevos préstamos, consulta el estado de tus solicitudes y realiza seguimiento de tus créditos activos</p>
+                </header>
 
-                    {isOpenNewReq && (
+                <div className="grid place-content-center">
+                    <div className="flex flex-row gap-3">
                         <button
-                            className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 shadow-sm cursor-pointer"
+                            className="inline-flex items-center dark:text-gray-100 gap-1 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 shadow-sm cursor-pointer dark:bg-gray-800 dark:hover:bg-gray-700"
                             aria-label="Crear nueva solicitud"
+                            onClick={toggleNewReq}
                         >
-                            <FolderPlus size={16} className="flex-shrink-0" />
-                            <span className="text-sm font-medium">Guardar Borrador</span>
+                            <FolderPlus size={14} className="flex-shrink-0" />
+                            <span className="text-xs font-medium whitespace-nowrap">
+                                {isOpenNewReq ? "Cancelar" : "Nueva solicitud"}
+                            </span>
                         </button>
-                    )}
-                </div>
 
-                {!isOpenNewReq && (
-                    <button
-                        className="flex items-center gap-2 px-3 py-2 text-gray-600 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
-                        aria-label="Ver instrucciones"
-                    >
-                        <CircleHelp size={16} className="flex-shrink-0 dark:text-gray-400" />
-                        <span className="text-sm font-medium dark:text-gray-400">Instrucciones</span>
-                    </button>
-                )}
+                        {isOpenNewReq && (
+                            <button
+                                className="inline-flex items-center dark:text-gray-100 gap-1 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 hover:bg-gray-100 hover:border-gray-300 transition-all duration-200 shadow-sm cursor-pointer dark:bg-gray-800 dark:hover:bg-gray-700"
+                                aria-label="Guardar borrador"
+                            >
+                                <FolderPlus size={14} className="flex-shrink-0" />
+                                <span className="text-xs font-medium whitespace-nowrap">Guardar Borrador</span>
+                            </button>
+                        )}
+
+                        {!isOpenNewReq && (
+                            <button
+                                className="inline-flex items-center gap-1 px-3 py-1.5 text-gray-600 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
+                                aria-label="Ver instrucciones"
+                            >
+                                <CircleHelp size={14} className="flex-shrink-0 dark:text-gray-400" />
+                                <span className="text-xs font-medium dark:text-gray-400 whitespace-nowrap">Instrucciones</span>
+                            </button>
+                        )}
+                    </div>
+                </div>
             </div>
 
             {userComplete?.LoanApplication?.length === 0 && !isOpenNewReq && (
@@ -70,13 +80,14 @@ function PanelComponent() {
                             alt="No hay solicitudes"
                             fill
                             className="object-contain drop-shadow-sm"
+                            priority={true}
                         />
                     </div>
                     <p className="text-gray-600 dark:text-gray-300 text-lg mt-6 font-medium">Sin ninguna solicitud hasta el momento</p>
                     <p className="text-gray-400 dark:text-gray-500 text-sm mt-2 max-w-md text-center">
                         Empieza creando tu primera solicitud de préstamo usando el botón superior.
                     </p>
-                    <button onClick={toggleNewReq} className="mt-8 flex items-center gap-2 px-5 py-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 shadow-sm">
+                    <button onClick={toggleNewReq} className="dark:bg-gray-800 dark:hover:bg-gray-700 mt-8 flex items-center gap-2 px-5 py-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 shadow-sm">
                         <Plus size={16} strokeWidth={2.5} />
                         <span className="font-medium">Nueva solicitud</span>
                     </button>
@@ -85,7 +96,7 @@ function PanelComponent() {
 
             {isOpenNewReq && <FormNewReq />}
         </main>
-    )
+    );
 }
 
 export default PanelComponent;

@@ -25,7 +25,7 @@ export async function PUT(request: NextRequest) {
     try {
         const formData = await request.formData();
         const file = formData.get('file') as File;
-        const userId = formData.get('user_id') as File;
+        const userId = formData.get('user_id') as string;
         
         console.log('[UPLOAD] Archivo presente:', !!file);
         if (!file) {

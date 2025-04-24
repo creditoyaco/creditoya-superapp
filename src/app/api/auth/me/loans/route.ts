@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
         const userId = searchParams.get('user_id');
         const loan_id = searchParams.get('loan_id');
 
-        const response = await axios.get(`${process.env.GATEWAY_API}/loans/${userId}`)
+        const response = await axios.get(`${process.env.GATEWAY_API}/loans/${userId}`);
     } catch (error) {
 
     }

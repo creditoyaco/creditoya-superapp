@@ -7,7 +7,7 @@ import { useDarkMode } from "@/context/DarkModeContext";
 interface BoxUploadFilesProps {
     title: string;
     accept?: string;
-    maxSize?: number; // in MB
+    maxSize?: number;
     required?: boolean;
     onChange?: (file: File | null) => void;
 }
