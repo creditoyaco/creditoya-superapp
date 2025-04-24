@@ -35,8 +35,8 @@ function NavBar() {
                             priority={true}
                             src={creditoyaLogo.src}
                             alt="logo"
-                            width={200}
-                            height={100}
+                            width={150}
+                            height={80}
                             className='drop-shadow-md dark:invert dark:brightness-[0.87] dark:hue-rotate-180 h-auto w-auto'
                             onClick={() => router.push("/")}
                         />

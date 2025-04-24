@@ -28,7 +28,7 @@ function PanelComponent() {
     if (dataReady && !allFieldsComplete) return <MissingData />;
 
     return (
-        <main className="pt-32 min-h-dvh dark:bg-gray-900 px-[5%] flex flex-col">
+        <main className="pt-26 min-h-dvh dark:bg-gray-900 px-[5%] flex flex-col">
             <div className="flex flex-wrap justify-between">
                 <header className="mb-8">
                     <h1 className="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100">Gestión de préstamos</h1>
