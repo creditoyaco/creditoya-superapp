@@ -3,14 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useClientAuth } from "@/context/AuthContext"; // Asegúrate de ajustar la ruta correcta
-
-interface AuthFormData {
-    email: string;
-    password: string;
-    names?: string;
-    firstLastName?: string;
-    secondLastName?: string;
-}
+import { UserCompany } from "@/types/full";
 
 function useAuth() {
     const router = useRouter();
@@ -22,11 +15,27 @@ function useAuth() {
     const [names, setNames] = useState("");
     const [firstLastName, setFirstLastName] = useState("");
     const [secondLastName, setSecondLastName] = useState("");
+    // Agregamos estado para la empresa seleccionada
+    const [currentCompanie, setCurrentCompanie] = useState<UserCompany | null>(null);
+
+    console.log(
+        [ email],
+        [ password],
+        [ names ],
+        [ firstLastName ],
+        [ secondLastName ],
+        [ currentCompanie ]
+    )
 
     // Usamos el estado de carga del contexto de autenticación
     const isLoading = authContext.isLoading;
     // Usamos el error del contexto de autenticación
     const error = authContext.error;
+
+    // Manejador para cambiar la empresa seleccionada
+    const handleCompanyChange = (selectedCompany: UserCompany) => {
+        setCurrentCompanie(selectedCompany);
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
@@ -47,7 +56,8 @@ function useAuth() {
                     password,
                     names,
                     firstLastName,
-                    secondLastName: secondLastName || undefined
+                    secondLastName,
+                    currentCompanie
                 };
 
                 const success = await authContext.register(userData);
@@ -75,6 +85,9 @@ function useAuth() {
         setFirstLastName,
         secondLastName,
         setSecondLastName,
+        currentCompanie,
+        setCurrentCompanie,
+        handleCompanyChange,
         isLoading,
         error,
         setIsLogin,

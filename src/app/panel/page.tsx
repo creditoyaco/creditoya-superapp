@@ -3,13 +3,10 @@
 import usePanel from "@/hooks/usePanel";
 import MissingData from "@/components/panel/MissingData";
 import LoadingPanel from "@/components/panel/Loading";
-import { Bell, CheckCircle2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import searchIlustration from "@/assets/ilustrations/Search.svg";
 import Image from "next/image";
 import HeaderPanel from "@/components/panel/HeaderPanel";
-import { LoanStatus } from "@/types/full";
-import { stringToPriceCOP } from "@/handlers/stringToCop";
-import { BankTypes, handleKeyToStringBank } from "@/handlers/stringToBank";
 import CardRequest from "@/components/panel/cardRequest";
 
 function PanelComponent() {
@@ -21,7 +18,7 @@ function PanelComponent() {
         toggleNewReq
     } = usePanel();
 
-    console.log(userComplete)
+    // console.log(userComplete)
 
     // Show loading state while data is being fetched or processed
     if (isLoading || !dataReady || !userComplete) return <LoadingPanel message={"Cargando informacion del usuario"} />;
@@ -57,7 +54,7 @@ function PanelComponent() {
                 )}
 
                 {userComplete.LoanApplication && userComplete.LoanApplication.length > 0 && (
-                    <div className="flex flex-col mt-10">
+                    <div className="flex flex-col mt-7">
                         {userComplete.LoanApplication.map(loan => <CardRequest loan={loan} key={loan.id} />)}
                     </div>
                 )}

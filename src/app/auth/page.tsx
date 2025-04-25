@@ -3,6 +3,8 @@
 import Image from "next/image";
 import logoCY from "@/assets/logos/only_object_logo.png";
 import useAuth from "@/hooks/useAuth";
+import SelectEmpresa from "@/components/panel/selectCompani";
+import { UserCompany } from "@/types/full";
 
 function AuthPage() {
     const {
@@ -20,7 +22,9 @@ function AuthPage() {
         setFirstLastName,
         setSecondLastName,
         setEmail,
-        setPassword
+        setPassword,
+        handleCompanyChange,
+        currentCompanie
     } = useAuth();
 
     return (
@@ -46,15 +50,15 @@ function AuthPage() {
             </div>
 
             {/* Formulario a la derecha */}
-            <div className="w-full md:w-1/2 flex items-center justify-center p-8 dark:bg-gray-900">
-                <div className="w-full max-w-md space-y-6">
+            <div className="w-full md:w-1/2 flex items-center justify-center p-4 md:p-8 dark:bg-gray-900 overflow-y-auto">
+                <div className="w-full max-w-md space-y-4">
                     {/* Logo móvil (visible solo en móvil) */}
-                    <div className="md:hidden flex justify-center mb-6">
+                    <div className="md:hidden flex justify-center mb-4">
                         <Image
                             src={logoCY}
                             alt="Logo"
-                            width={120}
-                            height={120}
+                            width={100}
+                            height={100}
                             priority
                             className="object-contain"
                         />
@@ -70,12 +74,12 @@ function AuthPage() {
                     </div>
 
                     {error && (
-                        <div className="p-3 text-sm bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-md">
+                        <div className="p-2 text-sm bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-md">
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className={`${!isLogin ? 'space-y-3' : 'space-y-4'}`}>
                         {!isLogin && (
                             <>
                                 <div>
@@ -125,6 +129,13 @@ function AuthPage() {
                                         placeholder="Segundo apellido (opcional)"
                                     />
                                 </div>
+
+                                <div>
+                                    <label htmlFor="company" className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+                                        Empresa asociada
+                                    </label>
+                                    <SelectEmpresa isRegister onChange={handleCompanyChange} defaultValue={currentCompanie as UserCompany} />
+                                </div>
                             </>
                         )}
 
@@ -173,13 +184,13 @@ function AuthPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full mt-4 py-2 px-4 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transition-colors disabled:opacity-50"
+                            className="w-full mt-2 py-2 px-4 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 transition-colors disabled:opacity-50"
                         >
                             {isLogin ? (isLoading ? "Ingresando..." : "Ingresar") : (isLoading ? "Registrando..." : "Registrarse")}
                         </button>
                     </form>
 
-                    <div className="mt-6 text-center">
+                    <div className={`${isLogin ? 'mt-4' : 'mt-2'} text-center`}>
                         <p className="text-gray-600 dark:text-gray-400 text-xs">
                             {isLogin ? "¿No tienes una cuenta?" : "¿Ya tienes una cuenta?"}
                             <button

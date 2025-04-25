@@ -45,7 +45,7 @@ function usePanel() {
     const fetchUserData = cache(async (userId: string) => {
         try {
             const response = await axios.get(`/api/auth/me?user_id=${userId}`, { withCredentials: true });
-            console.log("data client: ", response.data)
+            // console.log("data client: ", response.data)
             return response.data.data;
         } catch (error) {
             if (error instanceof Error) {

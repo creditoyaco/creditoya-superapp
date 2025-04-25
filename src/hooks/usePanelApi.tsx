@@ -197,7 +197,12 @@ function usePanelApi() {
      * @param value Raw value
      * @returns Formatted value
      */
-    const formatFieldValue = (field: string, value: any): any => {
+    const formatFieldValue = (field: string, value: any): string => {
+        // Primero, verificar si el valor es null o undefined
+        if (value === null || value === undefined) {
+            return '';
+        }
+
         if (field === 'birthDate' && value) {
             // Format date properly
             try {
@@ -211,8 +216,9 @@ function usePanelApi() {
             return '';
         }
 
-        return value;
-    };
+        // Asegurarse de que el valor sea siempre un string
+        return String(value);
+    }
 
     return {
         userComplete,

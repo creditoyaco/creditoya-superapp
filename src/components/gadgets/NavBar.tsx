@@ -1,6 +1,6 @@
 "use client"
 
-import { User, Moon, Sun, Menu, X, CircleX } from 'lucide-react';
+import { User, Moon, Sun, Menu, X, CircleX, UserCircle } from 'lucide-react';
 import creditoyaLogo from "@/assets/logos/creditoya_logo_minimalist.png"
 import Image from 'next/image';
 import useNavBar from '@/hooks/useNavBar';
@@ -22,6 +22,11 @@ function NavBar() {
         isAuthenticated,
         logout,
     } = useClientAuth();
+
+    // Función para verificar si la URL del avatar es válida
+    const isValidAvatar = (avatarUrl: string | undefined | null): boolean => {
+        return Boolean(avatarUrl && avatarUrl !== "No definido" && avatarUrl.trim() !== "");
+    };
 
     return (
         <div className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${scrolled
@@ -50,14 +55,20 @@ function NavBar() {
                             <div>
                                 <div className='flex flex-row gap-2'>
                                     <div className='grid place-content-center'>
-                                        <Image
-                                            src={user?.avatar as string}
-                                            alt={"avatar"}
-                                            width={500}
-                                            height={500}
-                                            className='object-cover drop-shadow-sm w-8 h-8 rounded-full border-2 border-green-500'
-                                            priority={true}
-                                        />
+                                        {isValidAvatar(user?.avatar) ? (
+                                            <Image
+                                                src={user?.avatar as string}
+                                                alt={"avatar"}
+                                                width={500}
+                                                height={500}
+                                                className='object-cover drop-shadow-sm w-8 h-8 rounded-full border-2 border-green-500'
+                                                priority={true}
+                                            />
+                                        ) : (
+                                            <div className="w-8 h-8 rounded-full border-2 border-green-500 grid place-content-center bg-gray-100 dark:bg-gray-700">
+                                                <UserCircle size={24} className="text-green-500" />
+                                            </div>
+                                        )}
                                     </div>
                                     <div className='flex flex-col'>
                                         <p className='text-sm font-semibold'>{user?.names} {user?.firstLastName}</p>
@@ -114,14 +125,20 @@ function NavBar() {
                             {isAuthenticated ? (
                                 <div className="mb-3 pb-3 border-b border-opacity-10 border-gray-400">
                                     <div className="flex items-center gap-3">
-                                        <Image
-                                            src={user?.avatar as string}
-                                            alt={"avatar"}
-                                            width={40}
-                                            height={40}
-                                            className='object-cover drop-shadow-sm w-10 h-10 rounded-full border-2 border-green-500'
-                                            priority={true}
-                                        />
+                                        {isValidAvatar(user?.avatar) ? (
+                                            <Image
+                                                src={user?.avatar as string}
+                                                alt={"avatar"}
+                                                width={40}
+                                                height={40}
+                                                className='object-cover drop-shadow-sm w-10 h-10 rounded-full border-2 border-green-500'
+                                                priority={true}
+                                            />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-full border-2 border-green-500 grid place-content-center bg-gray-100 dark:bg-gray-700">
+                                                <UserCircle size={30} className="text-green-500" />
+                                            </div>
+                                        )}
                                         <div className="flex flex-col">
                                             <p className={`text-sm font-semibold ${darkmode ? 'text-gray-200' : 'text-gray-800'}`}>
                                                 {user?.names} {user?.firstLastName}

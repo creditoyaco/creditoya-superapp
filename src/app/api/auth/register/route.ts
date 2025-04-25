@@ -2,9 +2,6 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-// Define constants for cookie names - use the same as in backend
-const CLIENT_TOKEN_COOKIE = '@creditoya:token';
-
 interface ApiResponse {
     success: boolean;
     data?: any;
@@ -52,7 +49,7 @@ export async function POST(request: Request) {
 
         // Set authentication cookie
         res.cookies.set({
-            name: CLIENT_TOKEN_COOKIE,
+            name: 'creditoya_token',
             value: accessToken,
             path: '/',
             httpOnly: true,

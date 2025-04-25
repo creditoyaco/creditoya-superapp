@@ -24,7 +24,7 @@ const FormInput: React.FC<FormInputProps> = ({
   isValid
 }) => {
   // Estado local para el valor que escribe el usuario
-  const [inputValue, setInputValue] = useState(initialValue);
+  const [inputValue, setInputValue] = useState(initialValue === null ? '' : initialValue);
   // Estado para saber si estamos actualizando
   const [isUpdating, setIsUpdating] = useState(false);
   // Referencia para el timeout de debounce
@@ -47,8 +47,10 @@ const FormInput: React.FC<FormInputProps> = ({
       return;
     }
 
+    const valueToSet = initialValue === null ? '' : initialValue;
+
     // Para las fechas, convertir de formato ISO a YYYY-MM-DD si es necesario
-    if (type === 'date' && initialValue && initialValue.includes('T')) {
+    if (type === 'date' && valueToSet && valueToSet.includes('T')) {
       try {
         const date = new Date(initialValue);
         const formattedDate = date.toISOString().split('T')[0];
