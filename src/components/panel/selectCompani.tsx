@@ -11,8 +11,8 @@ interface SelectEmpresaProps {
 }
 
 const SelectEmpresa = ({ isRegister, onChange, defaultValue }: SelectEmpresaProps) => {
-    // Solo usar el hook si no estamos en modo registro
-    const panelApi = !isRegister ? usePanelApi() : null;
+    // Siempre llamamos al hook, sin importar el valor de isRegister
+    const panelApi = usePanelApi();
     const { userComplete, updateUserField } = panelApi || {};
 
     // Estado para controlar si el componente está inicializado
