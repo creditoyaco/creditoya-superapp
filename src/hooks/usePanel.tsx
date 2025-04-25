@@ -16,20 +16,6 @@ export interface FileChangeEvent extends React.ChangeEvent<HTMLInputElement> {
     target: HTMLInputElement & { files: FileList };
 }
 
-// Cache user data requests
-const fetchUserData = cache(async (userId: string) => {
-    try {
-        const response = await axios.get(`/api/auth/me?user_id=${userId}`, { withCredentials: true });
-        return response.data.data;
-    } catch (error) {
-        if (error instanceof Error) {
-            console.error("Error fetching user data:", error.message);
-            throw new Error(error.message);
-        }
-        throw error;
-    }
-});
-
 function usePanel() {
     const { user } = useClientAuth();
     const [userComplete, setUserComplete] = useState<User | null>(null);
@@ -54,6 +40,21 @@ function usePanel() {
         const allComplete = fieldStatuses.length > 0 && fieldStatuses.every(field => field.completed);
         setAllFieldsComplete(allComplete);
     }, [fieldStatuses]);
+
+    // Cache user data requests
+    const fetchUserData = cache(async (userId: string) => {
+        try {
+            const response = await axios.get(`/api/auth/me?user_id=${userId}`, { withCredentials: true });
+            console.log("data client: ", response.data)
+            return response.data.data;
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error("Error fetching user data:", error.message);
+                throw new Error(error.message);
+            }
+            throw error;
+        }
+    });
 
     // Fetch full user data
     const getFullDataClient = async (userId: string) => {
@@ -145,6 +146,14 @@ function usePanel() {
         }
     };
 
+    const toggleNewReq = (isReq?: boolean) => {
+        if (isReq === true) {
+            router.push('/panel');
+        } else if (!isReq || isReq === false) {
+            router.push('/panel/nueva-solicitud');
+        }
+    }
+
     // Calculate missing fields for backward compatibility
     const missingFields = fieldStatuses
         .filter(field => !field.completed)
@@ -161,6 +170,7 @@ function usePanel() {
         dataReady,
         router,
         refreshUserData,
+        toggleNewReq,
     };
 }
 

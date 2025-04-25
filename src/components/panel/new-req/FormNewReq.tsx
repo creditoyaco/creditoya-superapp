@@ -26,17 +26,19 @@ function FormNewReq() {
         handleTermsChange
     } = useFormReq();
 
-    if (!userComplete || isCheckingStorage) return <LoadingPanel />;
+    if (!userComplete || isCheckingStorage === true) {
+        return <LoadingPanel message={"Cargando Formulario"} />;
+    }
 
-    if (isCreating && !IsSuccessPreCreate) return (
-        <div className="flex items-center justify-center h-screen">
-            <LoadingPanel />
-        </div>
-    )
+    if (isCreating === true && IsSuccessPreCreate === false) {
+        return <LoadingPanel message={"Ya casi esta listo, espera un momento"} />;
+    }
 
-    if (!isCreating && IsSuccessPreCreate) return <LoanVerifyToken PreLoanId={PreLoanId} />
+    if (isCreating === false && IsSuccessPreCreate === true) {
+        return <LoanVerifyToken PreLoanId={PreLoanId} />
+    }
 
-    if (!isCreating && !IsSuccessPreCreate) {
+    if (isCreating === false && IsSuccessPreCreate === false) {
         return (
             <form onSubmit={handleSubmit}>
                 <div className="mt-8 space-y-4">
@@ -57,7 +59,7 @@ function FormNewReq() {
                     />
                     <SignaturePad onSave={handleSignature} required />
 
-                    {userComplete.currentCompanie !== "valor_agregado" && (
+                    {userComplete && userComplete.currentCompanie !== "valor_agregado" && (
                         <div>
                             <label className="text-lg font-medium dark:text-gray-300 text-gray-700 mb-2">
                                 Soportes de Ingresos Laborales

@@ -4,7 +4,6 @@ import { User, Moon, Sun, Menu, X, CircleX } from 'lucide-react';
 import creditoyaLogo from "@/assets/logos/creditoya_logo_minimalist.png"
 import Image from 'next/image';
 import useNavBar from '@/hooks/useNavBar';
-import usePanel from '@/hooks/usePanel';
 import { useClientAuth } from '@/context/AuthContext';
 
 function NavBar() {
@@ -18,8 +17,11 @@ function NavBar() {
         setIsMenuOpen
     } = useNavBar();
 
-    const { user, isAuthenticated, logout } = useClientAuth();
-    const { userComplete } = usePanel();
+    const {
+        user,
+        isAuthenticated,
+        logout,
+    } = useClientAuth();
 
     return (
         <div className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${scrolled
@@ -108,6 +110,49 @@ function NavBar() {
                 isMenuOpen && (
                     <div className={`md:hidden border-t ${darkmode ? 'border-gray-800 bg-gray-800/95 backdrop-blur-sm' : 'border-gray-100 bg-gray-50/95 backdrop-blur-sm'}`}>
                         <div className="max-w-6xl mx-auto py-3 px-4">
+                            {/* Perfil de usuario en móvil */}
+                            {isAuthenticated ? (
+                                <div className="mb-3 pb-3 border-b border-opacity-10 border-gray-400">
+                                    <div className="flex items-center gap-3">
+                                        <Image
+                                            src={user?.avatar as string}
+                                            alt={"avatar"}
+                                            width={40}
+                                            height={40}
+                                            className='object-cover drop-shadow-sm w-10 h-10 rounded-full border-2 border-green-500'
+                                            priority={true}
+                                        />
+                                        <div className="flex flex-col">
+                                            <p className={`text-sm font-semibold ${darkmode ? 'text-gray-200' : 'text-gray-800'}`}>
+                                                {user?.names} {user?.firstLastName}
+                                            </p>
+                                            <p
+                                                className='text-xs font-thin text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer'
+                                                onClick={() => {
+                                                    router.push("panel/perfil");
+                                                    setIsMenuOpen(false);
+                                                }}
+                                            >
+                                                Ver Cuenta
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="mb-3 pb-3 border-b border-opacity-10 border-gray-400">
+                                    <button
+                                        onClick={() => {
+                                            router.push("/auth");
+                                            setIsMenuOpen(false);
+                                        }}
+                                        className={`flex items-center py-2 px-3 rounded-md w-full ${darkmode ? 'hover:bg-gray-700 text-gray-200' : 'hover:bg-gray-100 text-gray-800'}`}
+                                    >
+                                        <User size={16} className={`mr-2 ${darkmode ? 'text-green-300' : 'text-green-500'}`} />
+                                        <span>Iniciar Sesión</span>
+                                    </button>
+                                </div>
+                            )}
+
                             <div className="flex items-center justify-between py-2">
                                 <span className={`text-sm ${darkmode ? 'text-gray-300' : 'text-gray-700'}`}>
                                     Modo {darkmode ? 'oscuro' : 'claro'}
@@ -121,12 +166,21 @@ function NavBar() {
                                 </button>
                             </div>
 
-                            <div className="mt-2 pt-2 border-t border-opacity-10 border-gray-400">
-                                <button className={`flex items-center py-2 px-3 rounded-md w-full ${darkmode ? 'hover:bg-gray-700 text-gray-200' : 'hover:bg-gray-100 text-gray-800'}`}>
-                                    <User size={16} className={`mr-2 ${darkmode ? 'text-green-300' : 'text-green-500'}`} />
-                                    <span>Cuenta</span>
-                                </button>
-                            </div>
+                            {/* Botón de cerrar sesión en móvil */}
+                            {isAuthenticated && (
+                                <div className="mt-3 pt-3 border-t border-opacity-10 border-gray-400">
+                                    <button
+                                        onClick={() => {
+                                            logout();
+                                            setIsMenuOpen(false);
+                                        }}
+                                        className={`flex items-center justify-center gap-2 py-2 px-3 rounded-md w-full ${darkmode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'}`}
+                                    >
+                                        <CircleX size={16} className="text-red-400" />
+                                        <span className="text-sm font-semibold text-red-400">Cerrar Sesión</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )

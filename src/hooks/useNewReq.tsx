@@ -1,6 +1,9 @@
+"use client"
+
 import { useEffect, useState } from "react";
 import usePanel from "./usePanel";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface FormDataProps {
     entity: string;
@@ -15,6 +18,8 @@ interface FormDataProps {
 }
 
 function useFormReq() {
+    const { userComplete } = usePanel();
+
     const [formData, setFormData] = useState<FormDataProps>({
         entity: "",
         bankNumberAccount: "",
@@ -26,14 +31,15 @@ function useFormReq() {
         third_flyer: null,
         terms_and_conditions: false,
     });
-
-    const { userComplete } = usePanel();
     const [acceptedTerms, setAcceptedTerms] = useState(false);
-
-    const [isCreating, setIsCreating] = useState<boolean>(true); // Start with loading state
+    const [isCreating, setIsCreating] = useState<boolean>(true);
     const [isCheckingStorage, setIsCheckingStorage] = useState<boolean>(true);
     const [IsSuccessPreCreate, setIsSuccessPreCreate] = useState<boolean>(false);
     const [PreLoanId, setPreLoanId] = useState<string | null>(null);
+    const [preToken, setPreToken] = useState<string | null>(null);
+    const [isSuccesVerifyToken, setIsSuccesVerifyToken] = useState<boolean>(false);
+
+    const router = useRouter();
 
     // Check localStorage on component mount
     useEffect(() => {
@@ -135,7 +141,7 @@ function useFormReq() {
             });
 
             if (response.data.success) {
-                alert("Préstamo creado exitosamente");
+                console.log("data loan: ", response.data.loanDetails);
                 // Store loan data in localStorage with 15 minute expiration
                 storeLoanData(response.data.loanDetails);
                 setPreLoanId(response.data.loanDetails.loanId);
@@ -151,6 +157,54 @@ function useFormReq() {
             setIsCreating(false);
         }
     };
+
+
+    const handleCodeChange = (code: string) => {
+        setPreToken(code);
+    };
+
+    const sentToken = async () => {
+        if (!preToken) return;
+
+        if (preToken?.length !== 6) {
+            console.warn("El token debe tener 6 digitos");
+            return;
+        }
+
+        const resToken = await handleVerifyToken(preToken);
+
+        console.log("verification token response: ", resToken);
+
+        if (resToken) {
+            setIsSuccessPreCreate(false);
+            setPreLoanId(null);
+            localStorage.removeItem('loanSuccess');
+            setIsSuccesVerifyToken(true);
+
+            setTimeout(() => { router.push("/panel") }, 4000);
+        }
+
+        setPreToken(null);
+    }
+
+    const handleVerifyToken = async (token: string) => {
+        try {
+            const response = await axios.post(
+                "/api/loan/verify-token",
+                { preToken: token, preLoanId: PreLoanId, userId: userComplete?.id },
+                { withCredentials: true }
+            );
+
+            if (response.data.success) {
+                return response.data.data;
+            } else {
+                alert("Error al verificar el token: " + response.data.error);
+            }
+        } catch (error) {
+            console.error("Error al verificar el token:", error);
+            alert("Ocurrió un error al verificar el token. Por favor intenta nuevamente.");
+        }
+    }
 
     // Helper function to store loan data with expiration
     const storeLoanData = (data: any) => {
@@ -184,7 +238,9 @@ function useFormReq() {
         isCheckingStorage,
         isCreating,
         IsSuccessPreCreate,
+        setIsSuccessPreCreate,
         PreLoanId,
+        setPreLoanId,
         handleSubmit,
         handleBankSelect,
         handleBankAccountChange,
@@ -193,7 +249,13 @@ function useFormReq() {
         handleSignature,
         handleFileUpload,
         acceptedTerms,
-        handleTermsChange
+        handleTermsChange,
+        handleVerifyToken,
+        storeLoanData,
+        sentToken,
+        handleCodeChange,
+        setPreToken,
+        isSuccesVerifyToken,
     }
 }
 

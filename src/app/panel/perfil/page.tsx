@@ -10,14 +10,14 @@ import HeaderTitlesPerfil from "@/components/panel/perfil/headers";
 import PerfilAvatar from "@/components/panel/perfil/avatar";
 
 function PanelPerfilUser() {
-    const { 
-        userComplete, 
-        isLoading, 
-        isPending, 
-        dataReady 
+    const {
+        userComplete,
+        isLoading,
+        isPending,
+        dataReady
     } = usePanel();
     const [isPageReady, setIsPageReady] = useState(false);
-    
+
     // Use this effect to coordinate the rendering of all components
     useEffect(() => {
         if (dataReady && userComplete && !isLoading && !isPending) {
@@ -25,32 +25,34 @@ function PanelPerfilUser() {
             const timer = setTimeout(() => {
                 setIsPageReady(true);
             }, 300);
-            
+
             return () => clearTimeout(timer);
         } else {
             setIsPageReady(false);
         }
     }, [dataReady, userComplete, isLoading, isPending]);
-    
+
     // Show loading state if data is not ready
     if (!isPageReady) {
-        return <LoadingPanel />;
+        return <LoadingPanel message={"Cargando datos del perfil"} />;
     }
-    
+
     return (
-        <main className="min-h-dvh dark:bg-gray-900 pt-32 flex flex-wrap px-[5%] gap-6 sm:gap-20 pb-20">
-            <div className="basis-[400px] grow space-y-4">
-                <PerfilAvatar />
-                <FormDatesPerfil />
-            </div>
-            
-            <div className="basis-[400px] grow space-y-3">
-                <HeaderTitlesPerfil
-                    title={"Validaciones de identidad"}
-                    bio={"Confirmamos que la identidad del cliente sea real y segura."}
-                />
-                <VerificationPerfil />
-                <SelectEmpresa />
+        <main className="min-h-dvh dark:bg-gray-900 pt-32 pb-20">
+            <div className="max-w-7xl mx-auto py-3 px-4 flex flex-wrap gap-6 sm:gap-20">
+                <div className="basis-[400px] grow space-y-4">
+                    <PerfilAvatar />
+                    <FormDatesPerfil />
+                </div>
+
+                <div className="basis-[400px] grow space-y-3">
+                    <HeaderTitlesPerfil
+                        title={"Validaciones de identidad"}
+                        bio={"Confirmamos que la identidad del cliente sea real y segura."}
+                    />
+                    <VerificationPerfil />
+                    <SelectEmpresa />
+                </div>
             </div>
         </main>
     );

@@ -112,6 +112,7 @@ export type ILoanApplication = {
     id: string;
     userId: string;
     employeeId?: string;
+    cantity: string;
     firstFlyer?: string;
     firstFlyerUploadId?: string;
     secondFlyer?: string;
@@ -124,16 +125,16 @@ export type ILoanApplication = {
     newAmount?: string;
     newAmountOption?: boolean;
     hasBankSavingsAccount: boolean;
-    bankAccountNumber: string;
-    bankEntity: string;
+    bankNumberAccount: string;
+    entity: string;
     laborCard?: string;
     laborCardUploadId?: string;
     hasAcceptedTerms: boolean;
     signature: string;
     signatureUploadId: string;
     status: LoanStatus;
-    createdAt: Date;
-    updatedAt: Date;
+    created_at: Date;
+    updated_at: Date;
 
     // Relations
     user: User;
