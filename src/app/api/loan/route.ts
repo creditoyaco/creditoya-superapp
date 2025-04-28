@@ -7,15 +7,7 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies();
     const token = cookieStore.get('creditoya_token')?.value;
 
-    const { isValid, error } = await validateToken(token);
-
-    if (!isValid) {
-        console.warn('[UPLOAD] Token inválido o expirado');
-        return NextResponse.json({
-            success: false,
-            error: error || 'Token inválido o expirado'
-        }, { status: 401 });
-    }
+    await validateToken(token);
 
     try {
         // Since we're using FormData, we need to parse it correctly
@@ -128,5 +120,64 @@ export async function POST(request: NextRequest) {
             success: false,
             error: 'Error interno del servidor'
         }, { status: 500 });
+    }
+}
+
+export async function GET(req: NextRequest) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('creditoya_token')?.value;
+
+    try {
+        await validateToken(token);
+
+        const { searchParams } = new URL(req.url);
+        const loan_id = searchParams.get('loan_id');
+        const user_id = searchParams.get('user_id');
+
+        console.log("loanId: ", loan_id);
+        console.log("userId: ", user_id);
+
+        if (!loan_id || !user_id) {
+            return NextResponse.json({
+                success: false,
+                error: 'Faltan parámetros requeridos: loan_id y user_id'
+            }, { status: 400 });
+        }
+
+        const baseURL = process.env.GATEWAY_API || '';
+        const response = await axios.get(
+            `${baseURL}/loans/${user_id}/${loan_id}/info`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+            },
+        );
+
+        console.log("Respuesta del API:", response.data);
+
+        if (response.data.success === false) {
+            throw new Error(response.data.error || 'Error al obtener información del préstamo');
+        }
+
+        return NextResponse.json({
+            success: true,
+            data: response.data
+        });
+    } catch (error: any) {
+        console.error('[API] Error en petición GET loan:', error);
+
+        if (error.response?.status === 401) {
+            return NextResponse.json({
+                success: false,
+                error: 'No autenticado'
+            }, { status: 401 });
+        }
+
+        return NextResponse.json({
+            success: false,
+            error: error.response?.data?.error || error.message || 'Error del servidor al obtener información del préstamo'
+        }, { status: error.response?.status || 500 });
     }
 }

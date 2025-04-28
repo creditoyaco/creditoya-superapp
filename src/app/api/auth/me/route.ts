@@ -13,14 +13,7 @@ export async function GET(request: NextRequest) {
   const token = cookieStore.get('creditoya_token')?.value;
 
   // Validar el token
-  const { isValid, error } = await validateToken(token);
-
-  if (!isValid) {
-    return NextResponse.json({
-      success: false,
-      error: error || 'Token inválido o expirado'
-    }, { status: 401 });
-  }
+  await validateToken(token);
 
   // Configurar headers con el token
   const config = {
@@ -85,14 +78,7 @@ export async function PUT(request: NextRequest) {
   const token = cookieStore.get('creditoya_token')?.value;
 
   // Validate token
-  const { isValid, error } = await validateToken(token);
-
-  if (!isValid) {
-    return NextResponse.json({
-      success: false,
-      error: error || 'Token inválido o expirado'
-    }, { status: 401 });
-  }
+  await validateToken(token);
 
   // Configure headers with token
   const config = {

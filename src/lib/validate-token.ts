@@ -1,38 +1,39 @@
-/**  
+import { NextResponse } from "next/server";
+
+/**
  * Función para validar el token JWT
-*/
-export async function validateToken(token: string | undefined): Promise<{ isValid: boolean; error: string | null }> {
+ */
+export async function validateToken(token: string | undefined): Promise<void> {
     try {
         if (!token) {
-            return { isValid: false, error: 'No se encontró token en cookies' };
+            throw new Error('No se encontró token en cookies');
         }
-
+        
         // Decodificar y validar expiración del token
         const tokenParts = token.split('.');
         if (tokenParts.length !== 3) {
-            return { isValid: false, error: 'Formato de token inválido' };
+            throw new Error('Formato de token inválido');
         }
-
+        
         // Decodificar el payload (segunda parte del token)
         const base64Payload = tokenParts[1].replace(/-/g, '+').replace(/_/g, '/');
         const decodedPayload = Buffer.from(base64Payload, 'base64').toString('utf-8');
         const payload = JSON.parse(decodedPayload);
-
+        
         // Verificar expiración
         if (payload.exp) {
             const expTime = new Date(payload.exp * 1000);
             const now = new Date();
-
+            
             if (expTime < now) {
-                return { isValid: false, error: 'Token expirado' };
+                throw new Error('Token expirado');
             }
         }
-
-        return { isValid: true, error: null };
+        
+        // Si todo está bien, la función termina sin devolver nada (Promise<void>)
+        return;
     } catch (error: any) {
-        return {
-            isValid: false,
-            error: `Error al validar token: ${error.message}`
-        };
+        // Lanzar el error para que sea manejado por quien llama a la función
+        throw new Error(error.message || 'Token inválido o expirado');
     }
 }

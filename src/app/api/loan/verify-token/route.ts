@@ -7,15 +7,7 @@ export async function POST(req: NextRequest) {
     const cookieStore = await cookies();
     const token = cookieStore.get('creditoya_token')?.value;
 
-    const { isValid, error } = await validateToken(token);
-
-    if (!isValid) {
-        console.warn('[UPLOAD] Token inválido o expirado');
-        return NextResponse.json({
-            success: false,
-            error: error || 'Token inválido o expirado'
-        }, { status: 401 });
-    }
+    await validateToken(token);
 
     try {
         const { preToken, preLoanId, userId } = await req.json();

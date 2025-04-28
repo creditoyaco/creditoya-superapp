@@ -121,6 +121,15 @@ function FormDatesPerfil() {
                 />
 
                 <FormInput
+                    label="Ciudad"
+                    initialValue={formatFieldValue('city', userComplete.city)}
+                    required={true}
+                    onUpdate={handleUpdate}
+                    fieldName="city"
+                    isValid={isFieldValid('city', userComplete.city)}
+                />
+
+                <FormInput
                     label="Direccion de residencia"
                     initialValue={formatFieldValue('residence_address', userComplete.residence_address)}
                     required={true}

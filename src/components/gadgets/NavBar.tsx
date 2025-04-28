@@ -72,7 +72,7 @@ function NavBar() {
                                     </div>
                                     <div className='flex flex-col'>
                                         <p className='text-sm font-semibold'>{user?.names} {user?.firstLastName}</p>
-                                        <p className='text-xs font-thin text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer' onClick={() => router.push("panel/perfil")}>Ver Cuenta</p>
+                                        <p className='text-xs font-thin text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer' onClick={() => router.push("/panel/perfil")}>Ver Cuenta</p>
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +146,7 @@ function NavBar() {
                                             <p
                                                 className='text-xs font-thin text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer'
                                                 onClick={() => {
-                                                    router.push("panel/perfil");
+                                                    router.push("/panel/perfil");
                                                     setIsMenuOpen(false);
                                                 }}
                                             >

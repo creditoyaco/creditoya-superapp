@@ -4,22 +4,10 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-    console.log('[UPLOAD] Iniciando función POST');
-
     const cookieStore = await cookies();
     const token = cookieStore.get('creditoya_token')?.value;
-    console.log('[UPLOAD] Token obtenido:', token);
 
-    const { isValid, error } = await validateToken(token);
-    console.log('[UPLOAD] Resultado de validación del token:', isValid, error);
-
-    if (!isValid) {
-        console.warn('[UPLOAD] Token inválido o expirado');
-        return NextResponse.json({
-            success: false,
-            error: error || 'Token inválido o expirado'
-        }, { status: 401 });
-    }
+    await validateToken(token);
 
     try {
         const formData = await request.formData();

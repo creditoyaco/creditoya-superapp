@@ -54,8 +54,8 @@ function PanelComponent() {
                 )}
 
                 {userComplete.LoanApplication && userComplete.LoanApplication.length > 0 && (
-                    <div className="flex flex-col mt-7">
-                        {userComplete.LoanApplication.map(loan => <CardRequest loan={loan} key={loan.id} />)}
+                    <div className="flex flex-col gap-3 mt-7">
+                        {userComplete.LoanApplication.map((loan) => <CardRequest loan={loan} key={loan.id} />)}
                     </div>
                 )}
             </div>
