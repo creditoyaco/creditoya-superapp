@@ -129,7 +129,7 @@ export type ILoanApplication = {
     entity: string;
     labor_card?: string;
     upid_labor_card?: string;
-    hasAcceptedTerms: boolean;
+    terms_and_conditions: boolean;
     signature: string;
     upSignatureId: string;
     status: LoanStatus;

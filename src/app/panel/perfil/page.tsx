@@ -6,8 +6,8 @@ import usePanel from "@/hooks/usePanel";
 import SelectEmpresa from "@/components/panel/selectCompani";
 import VerificationPerfil from "@/components/panel/perfil/Verification";
 import FormDatesPerfil from "@/components/panel/perfil/InputsGroup";
-import HeaderTitlesPerfil from "@/components/panel/perfil/headers";
 import PerfilAvatar from "@/components/panel/perfil/avatar";
+import LatestLoan from "@/components/panel/perfil/Latestsloans";
 
 function PanelPerfilUser() {
     const {
@@ -46,14 +46,16 @@ function PanelPerfilUser() {
                 </div>
 
                 <div className="basis-[400px] grow space-y-3">
-                    <HeaderTitlesPerfil
-                        title={"Validaciones de identidad"}
-                        bio={"Confirmamos que la identidad del cliente sea real y segura."}
-                    />
                     <VerificationPerfil />
                     <SelectEmpresa />
+                    <LatestLoan />
                 </div>
             </div>
+            {/* <div className="max-w-7xl mx-auto py-3 px-4 flex flex-wrap gap-6 sm:gap-20">
+                <div>
+
+                </div>
+            </div> */}
         </main>
     );
 }

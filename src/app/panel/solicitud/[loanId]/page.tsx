@@ -16,7 +16,6 @@ function LoanInfoPage({ params }: { params: Promise<{ loanId: string }> }) {
         loan,
         loading,
         error,
-        bgColor,
     } = useLoan({ loanId });
 
     // Formatear el nombre de la empresa para mostrar

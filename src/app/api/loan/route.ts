@@ -123,41 +123,75 @@ export async function POST(request: NextRequest) {
     }
 }
 
+/**
+ * API endpoint para obtener información de préstamos
+ * Soporta tanto la obtención de un préstamo específico como el último préstamo de un usuario
+ */
 export async function GET(req: NextRequest) {
+    // 1. Validación de autenticación
     const cookieStore = await cookies();
     const token = cookieStore.get('creditoya_token')?.value;
 
+    if (!token) {
+        return NextResponse.json({
+            success: false,
+            error: 'No autenticado'
+        }, { status: 401 });
+    }
+    await validateToken(token);
+
+    // 2. Extracción y validación de parámetros
+    const { searchParams } = new URL(req.url);
+    const loanId = searchParams.get('loan_id');
+    const userId = searchParams.get('user_id');
+    const isLatest = searchParams.get('latest') === 'true';
+
     try {
-        await validateToken(token);
-
-        const { searchParams } = new URL(req.url);
-        const loan_id = searchParams.get('loan_id');
-        const user_id = searchParams.get('user_id');
-
-        console.log("loanId: ", loan_id);
-        console.log("userId: ", user_id);
-
-        if (!loan_id || !user_id) {
+        if (!userId) {
             return NextResponse.json({
                 success: false,
-                error: 'Faltan parámetros requeridos: loan_id y user_id'
+                error: 'Falta parámetro requerido: user_id'
             }, { status: 400 });
         }
 
+        if (!isLatest && !loanId) {
+            return NextResponse.json({
+                success: false,
+                error: 'Falta parámetro requerido: loan_id'
+            }, { status: 400 });
+        }
+
+        // 3. Preparación de la petición
         const baseURL = process.env.GATEWAY_API || '';
-        const response = await axios.get(
-            `${baseURL}/loans/${user_id}/${loan_id}/info`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                withCredentials: true,
-            },
-        );
+        const endpoint = isLatest
+            ? `${baseURL}/loans/${userId}/latest`
+            : `${baseURL}/loans/${userId}/${loanId}/info`;
 
-        console.log("Respuesta del API:", response.data);
+        const axiosConfig = {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true
+        };
 
-        if (response.data.success === false) {
+        // 4. Ejecución de la petición
+        const response = await axios.get(endpoint, axiosConfig);
+
+        // 5. Manejo de la respuesta del backend
+        if (!response.data && !isLatest) {
+            throw new Error('No se recibieron datos de la API');
+        }
+
+        // Si es la petición latest y no hay préstamos (response.data es null),
+        // devolver respuesta de éxito con data: null
+        if (isLatest && response.data === null) {
+            return NextResponse.json({
+                success: true,
+                data: null,
+                message: 'No tienes préstamos por el momento'
+            });
+        }
+
+        // Verificar si hay un mensaje de error específico en la respuesta
+        if (response.data && response.data.success === false) {
             throw new Error(response.data.error || 'Error al obtener información del préstamo');
         }
 
@@ -165,9 +199,12 @@ export async function GET(req: NextRequest) {
             success: true,
             data: response.data
         });
-    } catch (error: any) {
-        console.error('[API] Error en petición GET loan:', error);
 
+    } catch (error: any) {
+        // 6. Manejo de errores centralizado
+        console.error('[API] Error en petición GET loan:', error.message);
+
+        // Determinar el tipo de error para respuesta adecuada
         if (error.response?.status === 401) {
             return NextResponse.json({
                 success: false,
@@ -175,9 +212,29 @@ export async function GET(req: NextRequest) {
             }, { status: 401 });
         }
 
+        // Si es un error 404 y es una petición de 'latest', retornar éxito con null
+        // en lugar de un error para mantener consistencia con respuestas nulas
+        if (error.response?.status === 404 && searchParams.get('latest') === 'true') {
+            return NextResponse.json({
+                success: true,
+                data: null,
+                message: 'No tienes préstamos por el momento'
+            });
+        }
+
+        if (error.response?.status === 404) {
+            return NextResponse.json({
+                success: false,
+                error: 'Préstamo o usuario no encontrado'
+            }, { status: 404 });
+        }
+
+        const errorStatus = error.response?.status || 500;
+        const errorMessage = error.response?.data?.error || error.message || 'Error del servidor';
+
         return NextResponse.json({
             success: false,
-            error: error.response?.data?.error || error.message || 'Error del servidor al obtener información del préstamo'
-        }, { status: error.response?.status || 500 });
+            error: errorMessage
+        }, { status: errorStatus });
     }
 }

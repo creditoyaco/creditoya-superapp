@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useRef, useState } from "react";
 import axios from "axios";
+import HeaderTitlesPerfil from "./headers";
 
 function VerificationPerfil() {
     const { userComplete, refreshUserData } = usePanel();
@@ -109,6 +110,11 @@ function VerificationPerfil() {
 
     return (
         <>
+            <HeaderTitlesPerfil
+                title={"Validaciones de identidad"}
+                bio={"Confirmamos que la identidad del cliente sea real y segura."}
+            />
+
             <div className="space-y-6 flex flex-col">
                 {/* Sección de Selfie */}
                 <div className="flex flex-row space-x-5 bg-gray-50 dark:bg-gray-800 px-5 py-3 rounded-md border border-gray-200 dark:border-gray-700">

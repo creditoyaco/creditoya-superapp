@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import usePanelApi from '@/hooks/usePanelApi';
 import { UserCompany } from '@/types/full';
+import HeaderTitlesPerfil from './perfil/headers';
 
 interface SelectEmpresaProps {
     isRegister?: boolean;
@@ -106,9 +107,10 @@ const SelectEmpresa = ({ isRegister, onChange, defaultValue }: SelectEmpresaProp
     // Modo normal: versión completa del componente
     return (
         <div className="w-full mt-6">
-            <h3 className="text-lg font-semibold text-gray-600 dark:text-white mb-3">
-                Entidad a la que pertenece
-            </h3>
+            <HeaderTitlesPerfil
+                title={"Entidad a la que pertenece"}
+            />
+
             <div className="">
                 <div className="relative">
                     <select

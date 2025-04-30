@@ -1,7 +1,7 @@
 "use client";
 
 import { useClientAuth } from "@/context/AuthContext";
-import { User } from "@/types/full";
+import { ILoanApplication, User } from "@/types/full";
 import axios from "axios";
 import { useEffect, useState, useTransition, cache } from "react";
 import useLoadingState from "./useLoading";
@@ -23,17 +23,69 @@ function usePanel() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
 
+    const [latestLoan, setLatestLoan] = useState<ILoanApplication | null | string>(null);
+    const [loanMessage, setLoanMessage] = useState<string>("");
+    const [isLoadingLoan, setIsLoadingLoan] = useState<boolean>(false);
+    const [loanFetched, setLoanFetched] = useState<boolean>(false);
+
     // States for field status tracking
     const [fieldStatuses, setFieldStatuses] = useState<FieldStatus[]>([]);
     const [allFieldsComplete, setAllFieldsComplete] = useState<boolean>(false);
     const [dataReady, setDataReady] = useState<boolean>(false);
 
-    // Fetch user data when user ID is available
+    // Fetch latest loan data
+    const getLatestLoan = async () => {
+        console.log("Intentando obtener el último préstamo para usuario:", user?.id);
+        if (!user?.id) {
+            console.log("No hay ID de usuario disponible");
+            return;
+        }
+        
+        setIsLoadingLoan(true);
+        try {
+            console.log(`Haciendo petición a /api/loan?user_id=${user.id}&latest=true`);
+            const response = await axios.get(`/api/loan?user_id=${user.id}&latest=true`);
+            console.log("Respuesta de préstamo recibida:", response.data);
+            
+            if (response.data.success) {
+                setLatestLoan(response.data.data);
+                
+                // Si hay un mensaje en la respuesta (como "No tienes préstamos por el momento")
+                if (response.data.message) {
+                    setLoanMessage(response.data.message);
+                } else {
+                    setLoanMessage("");
+                }
+            } else {
+                console.error("Error en respuesta:", response.data.error);
+                setLoanMessage("No se pudieron cargar los préstamos");
+            }
+        } catch (error: any) {
+            console.error("Error fetching latest loan:", error.message);
+            setLoanMessage("Error al cargar tus préstamos");
+        } finally {
+            setIsLoadingLoan(false);
+            setLoanFetched(true);
+        }
+    };
+
+    // Efecto separado para cargar los datos del usuario
     useEffect(() => {
         if (user?.id) {
             getFullDataClient(user.id);
         }
     }, [user?.id]);
+
+    // Efecto separado para cargar el último préstamo
+    useEffect(() => {
+        const fetchLoanData = async () => {
+            if (user?.id && !loanFetched) {
+                await getLatestLoan();
+            }
+        };
+        
+        fetchLoanData();
+    }, [user?.id, loanFetched]);
 
     // Update allFieldsComplete when fieldStatuses changes
     useEffect(() => {
@@ -45,7 +97,6 @@ function usePanel() {
     const fetchUserData = cache(async (userId: string) => {
         try {
             const response = await axios.get(`/api/auth/me?user_id=${userId}`, { withCredentials: true });
-            // console.log("data client: ", response.data)
             return response.data.data;
         } catch (error) {
             if (error instanceof Error) {
@@ -146,6 +197,11 @@ function usePanel() {
         }
     };
 
+    // Refresh loan data manually
+    const refreshLoanData = () => {
+        setLoanFetched(false); // Esto forzará una recarga en el useEffect
+    };
+
     const toggleNewReq = (isReq?: boolean) => {
         if (isReq === true) {
             router.push('/panel');
@@ -159,6 +215,8 @@ function usePanel() {
         .filter(field => !field.completed)
         .map(field => field.name);
 
+    const hasActiveLoans = !!latestLoan;
+
     return {
         user,
         userComplete,
@@ -169,8 +227,14 @@ function usePanel() {
         allFieldsComplete,
         dataReady,
         router,
+        latestLoan,
+        loanMessage,
+        isLoadingLoan,
+        hasActiveLoans,
         refreshUserData,
+        refreshLoanData,
         toggleNewReq,
+        getLatestLoan
     };
 }
 
