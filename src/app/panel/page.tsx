@@ -46,7 +46,7 @@ function PanelComponent() {
                         <p className="text-gray-400 dark:text-gray-500 text-sm mt-2 max-w-md text-center">
                             Empieza creando tu primera solicitud de préstamo usando el botón superior.
                         </p>
-                        <button onClick={() => toggleNewReq()} className="dark:bg-gray-800 dark:hover:bg-gray-700 mt-8 flex items-center gap-2 px-5 py-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 shadow-sm">
+                        <button onClick={() => toggleNewReq(false)} className="dark:bg-gray-800 dark:hover:bg-gray-700 mt-8 flex items-center gap-2 px-5 py-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 shadow-sm">
                             <Plus size={16} strokeWidth={2.5} />
                             <span className="font-medium">Nueva solicitud</span>
                         </button>
